@@ -67,6 +67,7 @@ public class JettyFactory {
     public void start(final Server server) {
         try {
             server.start();
+            server.join();
         } catch (Exception e) {
             throw new RuntimeException("Unable to start server: ", e);
         }
@@ -86,20 +87,5 @@ public class JettyFactory {
 
     public void startAndWait(final Server server) {
         start(server);
-        String s = "\n" +
-                ">>>\n" +
-                ">>> PRESS ENTER TO STOP JETTY\n" +
-                ">>>";
-
-        System.out.println(s);
-
-        try {
-            System.in.read();
-        } catch (IOException e) {
-        } finally {
-            if (server.isRunning()) {
-                stop(server);
-            }
-        }
     }
 }
