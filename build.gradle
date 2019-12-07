@@ -1,0 +1,66 @@
+import java.time.ZoneId
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
+plugins {
+    id 'java'
+    id 'application'
+    id 'com.github.johnrengelman.shadow' version '5.1.0'
+}
+
+group 'com.demo'
+version '0.1'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+ext{
+    jettyVersion = '9.4.19.v20190610'
+    jerseyVersion = '2.27'
+}
+
+dependencies {
+    implementation 'com.google.code.gson:gson:2.8.2'
+    implementation 'ch.qos.logback:logback-classic:1.2.3'
+    implementation 'com.google.inject:guice:4.2.2'
+    implementation 'org.yaml:snakeyaml:1.19'
+
+    implementation "org.glassfish.jersey.containers:jersey-container-servlet:$jerseyVersion"
+    implementation "org.glassfish.jersey.inject:jersey-hk2:$jerseyVersion"
+    implementation "org.glassfish.jersey.media:jersey-media-json-jackson:$jerseyVersion"
+    implementation "org.glassfish.jersey.ext:jersey-bean-validation:$jerseyVersion"
+    implementation "org.eclipse.jetty:jetty-webapp:$jettyVersion"
+    implementation 'org.glassfish.hk2:guice-bridge:2.5.0-b61'
+    implementation 'com.h2database:h2:1.4.197'
+    implementation 'com.zaxxer:HikariCP:3.4.1'
+
+    testImplementation "junit:junit:4.12"
+    testImplementation "org.mockito:mockito-core:2.+"
+    testImplementation "org.assertj:assertj-core:3.11.1"
+    testImplementation "io.rest-assured:rest-assured:4.1.2"
+    testImplementation "org.hamcrest:hamcrest-all:1.3"
+}
+
+mainClassName = "com.demo.moneytransfer.Application"
+
+shadowJar {
+    mergeServiceFiles()
+    exclude 'META-INF/*.DSA', 'META-INF/*.RSA', 'META-INF/*.SF'
+    manifest {
+        attributes 'Implementation-Title': rootProject.name
+        attributes 'Implementation-Version': rootProject.version
+        attributes 'Implementation-Vendor-Id': rootProject.group
+        attributes 'Build-Time': ZonedDateTime.now(ZoneId.systemDefault())
+                .format(DateTimeFormatter.ISO_ZONED_DATE_TIME)
+        attributes 'Built-By': InetAddress.localHost.hostName
+        attributes 'Created-By': 'Gradle ' + gradle.gradleVersion
+        attributes 'Main-Class': mainClassName
+    }
+}
+
+
+
