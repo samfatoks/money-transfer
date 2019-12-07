@@ -9,18 +9,13 @@ import com.google.inject.Injector;
 import org.eclipse.jetty.server.Server;
 import org.junit.BeforeClass;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import javax.inject.Inject;
-
-import static io.restassured.RestAssured.*;
+import static io.restassured.RestAssured.given;
+import static io.restassured.RestAssured.when;
 import static org.hamcrest.Matchers.*;
 
 
 public class IntegrationTest {
-
-    private static Logger logger = LoggerFactory.getLogger(IntegrationTest.class);
 
     @BeforeClass
     public static void setup() throws Exception {
