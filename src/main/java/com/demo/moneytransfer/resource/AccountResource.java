@@ -1,14 +1,12 @@
 package com.demo.moneytransfer.resource;
 
+import com.demo.moneytransfer.domain.Account;
 import com.demo.moneytransfer.dto.AccountDTO;
 import com.demo.moneytransfer.dto.ResponseDTO;
 import com.demo.moneytransfer.dto.mapper.AccountMapper;
 import com.demo.moneytransfer.exception.AppException;
-import com.demo.moneytransfer.domain.Account;
 import com.demo.moneytransfer.service.AccountService;
 import org.eclipse.jetty.http.HttpStatus;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.inject.Inject;
 import javax.validation.Valid;
