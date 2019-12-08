@@ -160,7 +160,8 @@ public class AccountDaoImpl implements AccountDao {
                 newBalance = account.getBalance().add(amount);
             } else if (type == RequestType.DEBIT) {
                 newBalance = account.getBalance().subtract(amount);
-                if (newBalance.compareTo(new BigDecimal(0)) < 0) {
+                BigDecimal zeroAmount = BigDecimal.valueOf(0).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+                if (newBalance.compareTo(zeroAmount) < 0) {
                     throw new AppException(400, 5, "Insufficient balance");
                 }
             }
@@ -236,7 +237,8 @@ public class AccountDaoImpl implements AccountDao {
             }
 
             BigDecimal newSrcBalance = srcAccount.getBalance().subtract(amount);
-            if (newSrcBalance.compareTo(new BigDecimal(0)) < 0) {
+            BigDecimal zeroAmount = BigDecimal.valueOf(0).setScale(2, BigDecimal.ROUND_HALF_EVEN);
+            if (newSrcBalance.compareTo(zeroAmount) < 0) {
                 throw new AppException(400, 5, "Insufficient balance");
             }
 

@@ -84,7 +84,9 @@ public class AccountResource {
     @GET
     @Path("{username}/debit")
     public Response debitAmount(@PathParam("username") String username, @QueryParam("amount") double amount) throws Exception {
-        boolean status = accountService.debitAccount(username, new BigDecimal(amount));
+        BigDecimal amountBD = BigDecimal.valueOf(amount).setScale(2,
+                BigDecimal.ROUND_HALF_EVEN);
+        boolean status = accountService.debitAccount(username, amountBD);
 
         if(status) {
             ResponseDTO responseDTO = new ResponseDTO(0, "Debit successful");
@@ -104,7 +106,9 @@ public class AccountResource {
     @GET
     @Path("{username}/credit")
     public Response creditAmount(@PathParam("username") String username, @QueryParam("amount") double amount) throws Exception {
-        boolean status = accountService.creditAccount(username, new BigDecimal(amount));
+        BigDecimal amountBD = BigDecimal.valueOf(amount).setScale(2,
+                BigDecimal.ROUND_HALF_EVEN);
+        boolean status = accountService.creditAccount(username, amountBD);
         if(status) {
             ResponseDTO responseDTO = new ResponseDTO(0, "Credit successful");
             return Response
@@ -126,8 +130,9 @@ public class AccountResource {
         if(srcUsername.equalsIgnoreCase(destUsername)) {
             throw new AppException(HttpStatus.BAD_REQUEST_400, 8, "Invalid transfer: source and destination accounts are the same");
         }
-
-        boolean status = accountService.transfer(srcUsername, destUsername,  new BigDecimal(amount));
+        BigDecimal amountBD = BigDecimal.valueOf(amount).setScale(2,
+                BigDecimal.ROUND_HALF_EVEN);
+        boolean status = accountService.transfer(srcUsername, destUsername, amountBD);
         String successfulMessage = "You have successfully transferred " + amount + " USD to " + destUsername;
         String failureMessage = "Money transfer failed";
         if(status) {
