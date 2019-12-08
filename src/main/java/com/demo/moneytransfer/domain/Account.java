@@ -16,6 +16,11 @@ public class Account {
         this.username = username;
         this.balance = new BigDecimal(0);
     }
+
+    public Account(String username, BigDecimal balance) {
+        this.username = username;
+        this.balance = balance;
+    }
     public Account(Long id, String username, BigDecimal balance) {
         this.id = id;
         this.username = username;

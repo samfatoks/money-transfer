@@ -2,7 +2,7 @@ DROP TABLE IF EXISTS account;
 
 CREATE TABLE account (
     id INT(11) AUTO_INCREMENT NOT NULL,
-    username VARCHAR(40),
+    username VARCHAR(40) NOT NULL,
     balance DECIMAL(18,2),
     PRIMARY KEY (`id`),
     UNIQUE KEY username (username)

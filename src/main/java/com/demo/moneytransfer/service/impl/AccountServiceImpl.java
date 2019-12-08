@@ -3,7 +3,6 @@ package com.demo.moneytransfer.service.impl;
 import com.demo.moneytransfer.dao.AccountDao;
 import com.demo.moneytransfer.domain.Account;
 import com.demo.moneytransfer.domain.RequestType;
-import com.demo.moneytransfer.exception.AppException;
 import com.demo.moneytransfer.service.AccountService;
 import javax.inject.Inject;
 import java.math.BigDecimal;
@@ -35,9 +34,27 @@ public class AccountServiceImpl implements AccountService {
         return accountDao.findByUsername(username);
     }
 
-    private Account getAccount(String username) throws Exception {
-        return accountDao.findByUsername(username)
-                .orElseThrow(() -> new AppException(404, 5, "Invalid account - " + username));
+    @Override
+    public boolean debitAccount(String username, BigDecimal amount) throws Exception {
+        int updateCount = accountDao.updateBalance(username, amount, RequestType.DEBIT);
+        return updateCount == 1;
+    }
 
+    @Override
+    public boolean creditAccount(String username, BigDecimal amount) throws Exception {
+        int updateCount = accountDao.updateBalance(username, amount, RequestType.CREDIT);
+        return updateCount == 1;
+    }
+
+
+    @Override
+    public boolean transfer(String srcUsername, String destUsername, BigDecimal amount) throws Exception {
+        int updateCount = accountDao.transferMoney(srcUsername, destUsername, amount);
+        return updateCount == 2;
+    }
+
+    @Override
+    public void deleteAccount(String username) throws Exception {
+        accountDao.delete(username);
     }
 }
