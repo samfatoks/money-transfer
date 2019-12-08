@@ -1,4 +1,4 @@
-#Money Transfer API
+###Money Transfer API
 
 A basic REST API for money transfer between accounts.
 
