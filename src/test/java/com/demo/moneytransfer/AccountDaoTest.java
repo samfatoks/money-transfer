@@ -70,12 +70,13 @@ public class AccountDaoTest {
 
         Account account = new Account("user1");
         accountDao.create(account);
-
-        accountDao.updateBalance(account.getUsername(), new BigDecimal(50), RequestType.CREDIT);
+        BigDecimal amount = BigDecimal.valueOf(50).setScale(2,
+                BigDecimal.ROUND_HALF_EVEN);
+        accountDao.updateBalance(account.getUsername(), amount, RequestType.CREDIT);
 
         final Account accountRetrieved = accountDao.findByUsername(account.getUsername()).get();
-
-        assertThat(accountRetrieved.getBalance().intValue()).isEqualTo(50);
+        assertThat(accountRetrieved.getBalance()).isEqualTo(BigDecimal.valueOf(50).setScale(2,
+                BigDecimal.ROUND_HALF_EVEN));
     }
 
     @Test
@@ -84,24 +85,30 @@ public class AccountDaoTest {
         expectedEx.expect(AppException.class);
         expectedEx.expectMessage("Insufficient balance");
 
-        Account account1 = new Account("fred", new BigDecimal(300));
-        Account account2 = new Account("prince", new BigDecimal(50));
+        Account account1 = new Account("fred", BigDecimal.valueOf(300).setScale(2,
+                BigDecimal.ROUND_HALF_EVEN));
+        Account account2 = new Account("prince", BigDecimal.valueOf(50).setScale(2,
+                BigDecimal.ROUND_HALF_EVEN));
         accountDao.create(account1);
         accountDao.create(account2);
 
-        BigDecimal transferAmount = new BigDecimal(1000);
+        BigDecimal transferAmount = BigDecimal.valueOf(1000).setScale(2,
+                BigDecimal.ROUND_HALF_EVEN);
 
         int updateCount = accountDao.transferMoney(account1.getUsername(), account2.getUsername(), transferAmount);
     }
 
     @Test
     public void given_valid_accounts_balance_after_tranfer_should_be_expected_value() throws Exception {
-        Account account1 = new Account("fred", new BigDecimal(300));
-        Account account2 = new Account("prince", new BigDecimal(50));
+        Account account1 = new Account("fred", BigDecimal.valueOf(300).setScale(2,
+                BigDecimal.ROUND_HALF_EVEN));
+        Account account2 = new Account("prince", BigDecimal.valueOf(50).setScale(2,
+                BigDecimal.ROUND_HALF_EVEN));
         accountDao.create(account1);
         accountDao.create(account2);
 
-        BigDecimal transferAmount = new BigDecimal(100);
+        BigDecimal transferAmount = BigDecimal.valueOf(100).setScale(2,
+                BigDecimal.ROUND_HALF_EVEN);
         //Transfer 100 USD from account1 to account2
         int updateCount = accountDao.transferMoney(account1.getUsername(), account2.getUsername(), transferAmount);
         final Account account1Retrieved = accountDao.findByUsername(account1.getUsername()).get();
@@ -110,13 +117,14 @@ public class AccountDaoTest {
         assertThat(updateCount).isEqualTo(2);
         BigDecimal account1ExpectedBalance = account1.getBalance().subtract(transferAmount);
         BigDecimal account2ExpectedBalance = account2.getBalance().add(transferAmount);
-        assertThat(account1Retrieved.getBalance().intValue()).isEqualTo(account1ExpectedBalance.intValue());
-        assertThat(account2Retrieved.getBalance().intValue()).isEqualTo(account2ExpectedBalance.intValue());
+        assertThat(account1Retrieved.getBalance()).isEqualTo(account1ExpectedBalance);
+        assertThat(account2Retrieved.getBalance()).isEqualTo(account2ExpectedBalance);
     }
 
     @Test
     public void given_valid_account_dao_delete_should_remove_account() throws Exception {
-        Account account = new Account("fred", new BigDecimal(300));
+        Account account = new Account("fred", BigDecimal.valueOf(300).setScale(2,
+                BigDecimal.ROUND_HALF_EVEN));
         accountDao.create(account);
         Optional<Account> accountOpt  = accountDao.findByUsername(account.getUsername());
         assertThat(accountOpt.isPresent()).isTrue();

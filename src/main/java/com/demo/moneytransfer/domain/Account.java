@@ -14,7 +14,7 @@ public class Account {
 
     public Account(String username) {
         this.username = username;
-        this.balance = new BigDecimal(0);
+        this.balance = BigDecimal.valueOf(0).setScale(2, BigDecimal.ROUND_HALF_EVEN);
     }
 
     public Account(String username, BigDecimal balance) {
