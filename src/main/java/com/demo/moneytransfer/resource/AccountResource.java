@@ -4,7 +4,9 @@ import com.demo.moneytransfer.domain.Account;
 import com.demo.moneytransfer.dto.AccountDTO;
 import com.demo.moneytransfer.dto.ResponseDTO;
 import com.demo.moneytransfer.dto.mapper.AccountMapper;
+import com.demo.moneytransfer.exception.ApiException;
 import com.demo.moneytransfer.exception.AppException;
+import com.demo.moneytransfer.exception.ErrorMapper;
 import com.demo.moneytransfer.service.AccountService;
 import org.eclipse.jetty.http.HttpStatus;
 
@@ -42,7 +44,7 @@ public class AccountResource {
     @Path("/{username}")
     public Response getAccount(@PathParam("username") String username) throws Exception {
         Account account = accountService.findAccountByUsername(username)
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND_404, 4, "Invalid username - " + username));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND_404, 4, "Invalid username - " + username));
 
         ResponseDTO responseDTO = new ResponseDTO(0, "successful");
         responseDTO.setData(AccountMapper.toDTO(account));
@@ -70,7 +72,7 @@ public class AccountResource {
     @Path("/{username}")
     public Response deleteAccount(@PathParam("username") String username) throws Exception {
         Account account = accountService.findAccountByUsername(username)
-                .orElseThrow(() -> new AppException(HttpStatus.NOT_FOUND_404, 4, "Invalid username - " + username));
+                .orElseThrow(() -> new ApiException(HttpStatus.NOT_FOUND_404, 4, "Invalid username - " + username));
 
         accountService.deleteAccount(username);
 
@@ -84,11 +86,15 @@ public class AccountResource {
     @GET
     @Path("{username}/debit")
     public Response debitAmount(@PathParam("username") String username, @QueryParam("amount") double amount) throws Exception {
+        if(amount <= 0) {
+            throw new ApiException(400, 3, "Transaction amount must be greater than zero.");
+        }
+
         BigDecimal amountBD = BigDecimal.valueOf(amount).setScale(2,
                 BigDecimal.ROUND_HALF_EVEN);
         boolean status = accountService.debitAccount(username, amountBD);
 
-        if(status) {
+        if (status) {
             ResponseDTO responseDTO = new ResponseDTO(0, "Debit successful");
             return Response
                     .status(Response.Status.OK)
@@ -106,10 +112,14 @@ public class AccountResource {
     @GET
     @Path("{username}/credit")
     public Response creditAmount(@PathParam("username") String username, @QueryParam("amount") double amount) throws Exception {
+        if(amount <= 0) {
+            throw new ApiException(400, 3, "Transaction amount must be greater than zero.");
+        }
+
         BigDecimal amountBD = BigDecimal.valueOf(amount).setScale(2,
                 BigDecimal.ROUND_HALF_EVEN);
         boolean status = accountService.creditAccount(username, amountBD);
-        if(status) {
+        if (status) {
             ResponseDTO responseDTO = new ResponseDTO(0, "Credit successful");
             return Response
                     .status(Response.Status.OK)
@@ -127,15 +137,20 @@ public class AccountResource {
     @GET
     @Path("{username}/transfer")
     public Response transfer(@PathParam("username") String srcUsername, @QueryParam("to") String destUsername, @QueryParam("amount") double amount) throws Exception {
-        if(srcUsername.equalsIgnoreCase(destUsername)) {
-            throw new AppException(HttpStatus.BAD_REQUEST_400, 8, "Invalid transfer: source and destination accounts are the same");
+        if(amount <= 0) {
+            throw new ApiException(HttpStatus.BAD_REQUEST_400, 3, "Transaction amount must be greater than zero");
+        }
+        if (srcUsername.equalsIgnoreCase(destUsername)) {
+            throw new ApiException(HttpStatus.BAD_REQUEST_400, 7, "Invalid transfer: source and destination accounts " +
+                    "are the same");
         }
         BigDecimal amountBD = BigDecimal.valueOf(amount).setScale(2,
                 BigDecimal.ROUND_HALF_EVEN);
+
         boolean status = accountService.transfer(srcUsername, destUsername, amountBD);
         String successfulMessage = "You have successfully transferred " + amount + " USD to " + destUsername;
         String failureMessage = "Money transfer failed";
-        if(status) {
+        if (status) {
             ResponseDTO responseDTO = new ResponseDTO(0, successfulMessage);
             return Response
                     .status(Response.Status.OK)
