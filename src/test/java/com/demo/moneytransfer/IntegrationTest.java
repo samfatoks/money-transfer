@@ -82,7 +82,7 @@ public class IntegrationTest {
     }
 
     @Test
-    public void given_the_same_source_and_destination_account_tranfer_returns_400_with_code_8() {
+    public void given_the_same_source_and_destination_account_tranfer_returns_400_with_code_7() {
         given().
                 param("to", "james").
                 param("amount", 50).
@@ -90,7 +90,7 @@ public class IntegrationTest {
                 get("account/{username}/transfer", "james").
                 then().
                 statusCode(400).
-                body("code", is(8));
+                body("code", is(7));
 
     }
 

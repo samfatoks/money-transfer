@@ -36,21 +36,21 @@ public class AccountDaoImpl implements AccountDao {
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
                 logger.error("Unable to create account, no rows affected.");
-                throw new AppException(500, -1, "Account could not be created");
+                throw new AppException(-1, "Account could not be created");
             }
             keys = stmt.getGeneratedKeys();
             if (keys.next()) {
                 return keys.getLong(1);
             } else {
                 logger.error("Unable to create account, no ID obtained.");
-                throw new AppException(500, -1, "Account could not be created");
+                throw new AppException(-1, "Account could not be created");
             }
         } catch (SQLException e) {
             logger.error("Error Inserting Account ", e);
             if(e.getLocalizedMessage().contains("Unique index or primary key violation") || e.getLocalizedMessage().contains("Duplicate entry")) {
-                throw new  AppException(400, 6, "username already exist");
+                throw new  AppException(6, "Username already exist");
             } else {
-                throw new  AppException(500, -1, "Unable to create account");
+                throw new  AppException(-1, "Unable to create account");
             }
         } finally {
             close(conn, stmt, keys);
@@ -69,11 +69,11 @@ public class AccountDaoImpl implements AccountDao {
             int affectedRows = stmt.executeUpdate();
             if (affectedRows == 0) {
                 logger.error("Unable to delete account, no rows affected.");
-                throw new AppException(500, -1, "Account could not be deleted");
+                throw new AppException(-1, "Account could not be deleted");
             }
         } catch (SQLException e) {
             logger.error("Error deleting account ", e);
-            throw new AppException(500, -1, "Account could not be deleted");
+            throw new AppException(-1, "Account could not be deleted");
         } finally {
             close(conn, stmt, null);
         }
@@ -97,7 +97,7 @@ public class AccountDaoImpl implements AccountDao {
             return accounts;
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new AppException(500, -1, "Error fetching accounts");
+            throw new AppException(-1, "Error fetching accounts");
         } finally {
             close(conn, stmt, rs);
         }
@@ -122,7 +122,7 @@ public class AccountDaoImpl implements AccountDao {
             return Optional.empty();
         } catch (SQLException e) {
             e.printStackTrace();
-            throw new AppException(500, -1, "Error fetching account with username - " + username);
+            throw new AppException(-1, "Error fetching account with username - " + username);
         } finally {
             close(conn, stmt, rs);
         }
@@ -152,7 +152,7 @@ public class AccountDaoImpl implements AccountDao {
             }
 
             if (account == null) {
-                throw new AppException(404, 4, "Invalid account - " + username);
+                throw new AppException(4, "Invalid account - " + username);
             }
 
             BigDecimal newBalance = null;
@@ -162,7 +162,7 @@ public class AccountDaoImpl implements AccountDao {
                 newBalance = account.getBalance().subtract(amount);
                 BigDecimal zeroAmount = BigDecimal.valueOf(0).setScale(2, BigDecimal.ROUND_HALF_EVEN);
                 if (newBalance.compareTo(zeroAmount) < 0) {
-                    throw new AppException(400, 5, "Insufficient balance");
+                    throw new AppException(5, "Insufficient balance");
                 }
             }
 
@@ -179,7 +179,7 @@ public class AccountDaoImpl implements AccountDao {
                 if (conn != null)
                     conn.rollback();
             } catch (SQLException ee) {
-                throw new AppException(500, 5, "Fail to rollback transaction");
+                throw new AppException(-1, "Fail to rollback transaction");
             }
         } finally {
             try {
@@ -231,15 +231,15 @@ public class AccountDaoImpl implements AccountDao {
             }
 
             if (srcAccount == null) {
-                throw new AppException(404, 4, "Invalid source account - " + srcUsername);
+                throw new AppException(4, "Invalid source account - " + srcUsername);
             } else if(destAccount == null) {
-                throw new AppException(404, 4, "Invalid destination account - " + destUsername);
+                throw new AppException(4, "Invalid destination account - " + destUsername);
             }
 
             BigDecimal newSrcBalance = srcAccount.getBalance().subtract(amount);
             BigDecimal zeroAmount = BigDecimal.valueOf(0).setScale(2, BigDecimal.ROUND_HALF_EVEN);
             if (newSrcBalance.compareTo(zeroAmount) < 0) {
-                throw new AppException(400, 5, "Insufficient balance");
+                throw new AppException( 5, "Insufficient balance");
             }
 
             updateStmt = conn.prepareStatement("UPDATE account SET balance = ? WHERE username = ?");

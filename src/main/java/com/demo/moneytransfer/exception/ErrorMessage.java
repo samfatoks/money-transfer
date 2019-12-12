@@ -11,9 +11,15 @@ public class ErrorMessage {
 
     public ErrorMessage() {}
 
-    public ErrorMessage(AppException ex){
+    public ErrorMessage(ApiException ex){
         this.setCode(ex.code);
         this.setStatus(ex.status);
+        this.setMessage(ex.getMessage());
+    }
+
+    public ErrorMessage(AppException ex){
+        this.setCode(ex.code);
+        this.setStatus(ErrorMapper.getStatusCode(ex.code));
         this.setMessage(ex.getMessage());
     }
 
